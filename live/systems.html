@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Open Value · what is a system? · exploration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#DEE3EA;--fg:#14171C;--fg2:#2E3540;--mute:#55606E;--rule:rgba(20,23,28,.14);--acc:#1F3AFF;--card:#E9EDF2;--sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+html[data-theme=dark]{--bg:#14161A;--fg:#E9EBEE;--fg2:#C3C8CF;--mute:#9AA1AB;--rule:#262A31;--acc:#6E82FF;--card:#181B20}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:16px}
+h1{font-size:24px;font-weight:500;letter-spacing:-.02em;margin:6px 0 4px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.lede{color:var(--fg2);max-width:720px;margin:10px 0 0}
+button.t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;background:none;border:1px solid var(--rule);color:var(--fg);padding:8px 12px;border-radius:999px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px;margin-top:26px}
+.c{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:18px 18px 14px}
+.c h2{font-size:16px;font-weight:500;margin:0 0 4px;display:flex;gap:10px;align-items:baseline}
+.c h2 .n{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--mute)}
+.c p{color:var(--mute);font-size:13px;margin:0 0 10px;min-height:38px}
+.c .fig{width:100%}
+.c svg{display:block;width:100%;height:auto;overflow:visible}
+.c text{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;fill:var(--mute)}
+.verdict{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--fg2)}
+.verdict b{color:var(--fg);font-weight:500}
+.core{animation:drift 14s linear infinite}@keyframes drift{to{stroke-dashoffset:-72}}
+@media (prefers-reduced-motion:reduce){.core{animation:none}}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+  <div><span class="mono">Exploration · the system glyph</span><h1>What is a system, drawn?</h1>
+  <p class="lede">A system keeps its own rules, state, validation and meaning; it is opaque to the record; it emits one fingerprint and keeps one position; there are many, of different kinds. Each candidate below is five systems over the same beam. Judge: does the glyph say that without a label, does it stay calm, and does it belong to the beam family.</p></div>
+  <button class="t" id="tog">Dark</button>
+</header>
+<div class="grid" id="grid"></div>
+</div>
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const T={light:{fg:'#14171C',fg2:'#2E3540',mute:'#55606E',acc:'#1F3AFF',core:'#1F3AFF',bg:'#DEE3EA',glow:[[56,.03],[30,.05],[14,.09],[7,.18],[3,.45]],center:'#1F3AFF'},
+         dark:{fg:'#E9EBEE',fg2:'#C3C8CF',mute:'#9AA1AB',acc:'#6E82FF',core:'#DCE2FF',bg:'#14161A',glow:[[64,.07],[36,.12],[18,.22],[9,.4],[4,.75]],center:'#fff'}};
+let C=T.light;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function beam(svg,y,x0,x1,lit){
+  const g=el('g',{},svg);const id='m'+Math.random().toString(36).slice(2,7);
+  el('defs',{},g).innerHTML=`<linearGradient id="g${id}" gradientUnits="userSpaceOnUse" x1="${x0}" x2="${x1}"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".15" stop-color="#fff" stop-opacity="1"/><stop offset=".85" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}"><rect x="${x0-60}" y="${y-80}" width="${x1-x0+120}" height="160" fill="url(#g${id})"/></mask><filter id="s${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>`;
+  const m=el('g',{mask:`url(#${id})`},g);
+  C.glow.forEach(([w,op])=>el('line',{x1:x0,x2:x1,y1:y,y2:y,stroke:C.acc,'stroke-opacity':op,'stroke-width':w,'stroke-linecap':'round'},m));
+  el('line',{x1:x0,x2:x1,y1:y,y2:y,stroke:C.core,'stroke-width':2,'stroke-dasharray':'26 10',class:'core'},m);
+  lit.forEach(x=>{el('circle',{cx:x,cy:y,r:8,fill:C.acc,opacity:.45,filter:`url(#s${id})`},g);el('circle',{cx:x,cy:y,r:3,fill:C.center},g)});
+  return id;
+}
+function spark(svg,id,x0,y0,x1,y1,begin){
+  const my=(y0+y1)/2,d=`M${x0} ${y0} C${x0} ${my} ${x1} ${my} ${x1} ${y1}`;
+  el('path',{d,fill:'none',stroke:C.fg2,'stroke-opacity':.35,'stroke-width':1},svg);
+  const s=el('g',{opacity:0},svg);el('circle',{r:5,fill:C.acc,opacity:.6,filter:`url(#s${id})`},s);el('circle',{r:2,fill:C.center},s);
+  el('animateMotion',{dur:'3.2s',begin:begin+'s',repeatCount:'indefinite',path:d,calcMode:'spline',keyPoints:'0;1',keyTimes:'0;1',keySplines:'.4 0 .6 1'},s);
+  el('animate',{attributeName:'opacity',values:'0;1;1;0',keyTimes:'0;.1;.85;1',dur:'3.2s',begin:begin+'s',repeatCount:'indefinite'},s);
+}
+const W=360,H=200,yS=56,yB=160;
+const xs=[50,115,180,245,310];
+function stage(svg){svg.setAttribute('viewBox',`0 0 ${W} ${H}`);const id=beam(svg,yB,-30,W+30,xs);xs.forEach((x,i)=>spark(svg,id,x,yS+30,x,yB,i*.6));return id}
+const stroke=(op=.8)=>({fill:'none',stroke:C.fg2,'stroke-opacity':op,'stroke-width':1.2});
+
+const CANDIDATES=[
+ {n:'00',t:'Circle (current)',d:'A node. Says nothing about rules or state; the icon makes it an example, not the class.',
+  draw:(s,x)=>{el('circle',{cx:x,cy:yS,r:22,...stroke()},s)},
+  v:'<b>Baseline.</b> Reads as “network diagram”. Neutral but mute.'},
+ {n:'01',t:'Own sequence',d:'Each system is a short beam of its own: its own order, its own ticks. The shared beam below is the same thing, longer and shared.',
+  draw:(s,x,i)=>{const w=44;el('line',{x1:x-w/2,x2:x+w/2,y1:yS,y2:yS,stroke:C.fg2,'stroke-opacity':.8,'stroke-width':1.6},s);const n=3+i%3;for(let k=0;k<n;k++){const tx=x-w/2+6+k*((w-12)/(n-1));el('line',{x1:tx,x2:tx,y1:yS-4,y2:yS+4,stroke:C.fg2,'stroke-opacity':.6},s)}el('circle',{cx:x,cy:yS,r:2.2,fill:C.fg2},s)},
+  v:'<b>Strongest meaning.</b> “Each keeps its own order; one order is shared” with zero words. Same vocabulary as the record, so the family is one motif. Risk: too quiet at a glance.'},
+ {n:'02',t:'Polygon family',d:'Different regular polygons, same size, same stroke. Different rules, same standing.',
+  draw:(s,x,i)=>{const n=[3,4,5,6,7][i],r=22,pts=[];for(let k=0;k<n;k++){const a=-Math.PI/2+k*2*Math.PI/n;pts.push(`${x+r*Math.cos(a)},${yS+r*Math.sin(a)}`)}el('polygon',{points:pts.join(' '),...stroke(),'stroke-linejoin':'round'},s)},
+  v:'<b>Clearest “many kinds”.</b> Calm, geometric, no icons. Risk: a triangle next to a heptagon suggests a hierarchy of complexity that is not meant.'},
+ {n:'03',t:'Vessel with inner structure',d:'A sealed container; inside, a different faint pattern per system (grid, rings, lines). State is visible as texture, never as content.',
+  draw:(s,x,i)=>{el('rect',{x:x-24,y:yS-18,width:48,height:36,rx:9,...stroke()},s);const g=el('g',{stroke:C.fg2,'stroke-opacity':.3,'stroke-width':1,fill:'none'},s);
+    if(i%3==0){for(let r=0;r<2;r++)for(let c=0;c<3;c++)el('rect',{x:x-16+c*11,y:yS-11+r*11,width:8,height:8,rx:1.5},g)}
+    else if(i%3==1){[4,9,14].forEach(r=>el('circle',{cx:x,cy:yS,r},g))}
+    else{[-8,-3,2,7].forEach(dy=>el('line',{x1:x-15,x2:x+15,y1:yS+dy,y2:yS+dy},g))}},
+  v:'<b>Best “opaque body of state”.</b> Content-blindness is literal: you see that there is structure, not what it is. Risk: busiest of the set; at 390px the inner pattern is noise.'},
+ {n:'04',t:'Closed loop',d:'A ring with a point moving on it under its own rules; the spark leaves the loop. State changes inside; only a fingerprint leaves.',
+  draw:(s,x,i)=>{el('circle',{cx:x,cy:yS,r:20,...stroke(.6),'stroke-dasharray':'3 4'},s);const p=el('circle',{r:2.6,fill:C.fg2},s);el('animateMotion',{dur:`${5+i}s`,repeatCount:'indefinite',path:`M${x+20} ${yS} a20 20 0 1 1 -40 0 a20 20 0 1 1 40 0`},p)},
+  v:'<b>Most alive.</b> “Something keeps happening in there” is the point. Risk: dashed stroke collides with the status vocabulary (dashed = proposed). Would need a dotted/solid swap.'},
+ {n:'05',t:'Stratum',d:'A short column of three bands: meaning, validation, state. The spark leaves from the bottom band. Position-as-meaning, no words.',
+  draw:(s,x)=>{[-14,-2,10].forEach((dy,k)=>el('rect',{x:x-20,y:yS+dy-6,width:40,height:10,rx:2,...stroke(.85-k*.2)},s))},
+  v:'<b>Most precise, least symbolic.</b> This is the P3 explainer as a glyph. Da would accept it; Jack would see a database icon.'},
+ {n:'06',t:'Constellation',d:'A small cluster of points joined by its own lines: the system is a little graph with its own internal links. Internal links are fine; bilateral external ones are the cost.',
+  draw:(s,x,i)=>{const pts=[[0,-16],[14,-4],[8,14],[-10,12],[-15,-6]].map(([a,b])=>[x+a,yS+b]);const g=el('g',{stroke:C.fg2,'stroke-opacity':.4,'stroke-width':1},s);
+    [[0,1],[1,2],[2,3],[3,4],[4,0],[0,2]].slice(0,4+i%3).forEach(([a,b])=>el('line',{x1:pts[a][0],y1:pts[a][1],x2:pts[b][0],y2:pts[b][1]},g));pts.forEach(([a,b])=>el('circle',{cx:a,cy:b,r:2.2,fill:C.fg2},s))},
+  v:'<b>Ties to the “why” figure</b> (the tangle becomes internal, where it belongs). Risk: five constellations above one beam reads as a sky, which is pretty and not calm.'},
+ {n:'07',t:'Aperture',d:'A rounded square with its own horizon line inside. Each system sees its own horizon; the beam is the shared one.',
+  draw:(s,x,i)=>{el('rect',{x:x-22,y:yS-22,width:44,height:44,rx:12,...stroke()},s);const dy=[-6,2,-2,6,0][i];el('line',{x1:x-14,x2:x+14,y1:yS+dy,y2:yS+dy,stroke:C.fg2,'stroke-opacity':.7,'stroke-width':1.4},s)},
+  v:'<b>Quietest symbol with a real idea.</b> Rhymes with E08 (many ranges, one horizon). Risk: reads as “window” or “card” without the sentence.'},
+ {n:'08',t:'Tile, status by border',d:'E11’s wall: a square tile, solid border because systems exist today, a mono mark inside. The record below is the only dashed thing.',
+  draw:(s,x,i)=>{el('rect',{x:x-22,y:yS-20,width:44,height:40,rx:3,...stroke()},s);const t=el('text',{x,y:yS+4,'text-anchor':'middle'},s);t.textContent=['s1','s2','s3','s4','s5'][i];t.setAttribute('fill',C.mute)},
+  v:'<b>Most standards-body.</b> Status vocabulary carried by the glyph itself. Risk: tiles with labels are the explanatory register; emblem sections lose their atmosphere.'},
+ {n:'09',t:'Own sequence, framed (hybrid 01 + 07)',d:'The short own-order line inside a rounded frame. The frame gives it presence at a glance; the line inside gives it the meaning.',
+  draw:(s,x,i)=>{el('rect',{x:x-24,y:yS-18,width:48,height:36,rx:10,...stroke()},s);const w=30;el('line',{x1:x-w/2,x2:x+w/2,y1:yS,y2:yS,stroke:C.fg2,'stroke-opacity':.8,'stroke-width':1.4},s);const n=3+i%3;for(let k=0;k<n;k++){const tx=x-w/2+3+k*((w-6)/(n-1));el('line',{x1:tx,x2:tx,y1:yS-3.5,y2:yS+3.5,stroke:C.fg2,'stroke-opacity':.6},s)}el('circle',{cx:x+w/2-3,cy:yS,r:2,fill:C.fg2},s)},
+  v:'<b>Recommended.</b> Reads at thumbnail size (frame), carries the idea (own order, newest tick lit), and is literally the record’s vocabulary scaled down, so the family is one motif. Icons can return inside the frame in the explanatory sections only.'},
+ {n:'10',t:'Own sequence, live (hybrid 01 + 04)',d:'As 09, but the newest tick is where the spark is born: each system’s own order advances, and the fingerprint leaves from its end.',
+  draw:(s,x,i)=>{el('rect',{x:x-24,y:yS-18,width:48,height:36,rx:10,...stroke()},s);const w=30;el('line',{x1:x-w/2,x2:x+w/2,y1:yS,y2:yS,stroke:C.fg2,'stroke-opacity':.8,'stroke-width':1.4},s);for(let k=0;k<4;k++){const tx=x-w/2+3+k*8;el('line',{x1:tx,x2:tx,y1:yS-3.5,y2:yS+3.5,stroke:C.fg2,'stroke-opacity':.6},s)}const d=el('circle',{cx:x+w/2-3,cy:yS,r:2.4,fill:C.acc},s);el('animate',{attributeName:'opacity',values:'1;.2;1',dur:'3.2s',begin:`${i*.6}s`,repeatCount:'indefinite'},d)},
+  v:'<b>09 with a pulse.</b> The lit tick blinks when a spark leaves: cause and effect without a word. Use in the hero only; static 09 elsewhere.'},
+];
+function build(){
+  C=T[document.documentElement.dataset.theme];
+  const grid=document.getElementById('grid');grid.innerHTML='';
+  CANDIDATES.forEach(c=>{
+    const card=document.createElement('div');card.className='c';
+    card.innerHTML=`<h2><span class="n">${c.n}</span>${c.t}</h2><p>${c.d}</p><div class="fig"></div><div class="verdict">${c.v}</div>`;
+    grid.appendChild(card);
+    const svg=el('svg',{xmlns:NS,width:'100%'},card.querySelector('.fig'));
+    stage(svg);xs.forEach((x,i)=>c.draw(svg,x,i));
+  });
+}
+build();
+document.getElementById('tog').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';document.getElementById('tog').textContent=h.dataset.theme==='dark'?'Light':'Dark';build()};
+})();
+</script>
+</body></html>

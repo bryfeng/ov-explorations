@@ -100,11 +100,13 @@ def b0():
     b += label(920, 712, 'readers · check on their own terms', 10, MUTE)
     # claim
     b += label(56, 150, 'open research', 11, ACC_SOFT, 'start')
-    lines = [('Independent systems can share', FG), ('one neutral record of what', FG), ('happened and in what order,', FG), ('without adopting each', MUTE), ("other's rules.", MUTE)]
+    lines = [('A neutral, content-blind', FG), ('root of trust.', FG)]
     for i, (t, c) in enumerate(lines):
-        b += f'<text x="56" y="{208+i*48}" style="font-family:{SANS};font-size:42px;font-weight:500;letter-spacing:-.025em;fill:{c}">{t}</text>'
-    b += note(56, 500, 'The record sits underneath; everything that carries meaning', 16, FG2)
-    b += note(56, 524, 'stays above it, in the systems themselves.', 16, FG2)
+        b += f'<text x="56" y="{230+i*64}" style="font-family:{SANS};font-size:58px;font-weight:500;letter-spacing:-.03em;fill:{c}">{t}</text>'
+    b += note(56, 360, 'Independent systems can share one record of what happened and in', 18, FG2)
+    b += note(56, 386, "what order, without adopting each other's rules.", 18, FG2)
+    b += note(56, 500, 'The record sits underneath; everything that carries meaning', 15, MUTE)
+    b += note(56, 522, 'stays above it, in the systems themselves.', 15, MUTE)
     b += f'<rect x="56" y="566" width="150" height="42" rx="3" fill="{FG}"/>' + label(131, 592, 'read the thesis', 11, BG)
     b += f'<rect x="222" y="566" width="200" height="42" rx="3" fill="none" stroke="{FG2}" stroke-opacity=".5"/>' + label(322, 592, 'submit a pre-proposal', 11, FG2)
     return frame(b, 'B0 · hero · beam · the record as one line of light · dashed core = proposed')

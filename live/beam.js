@@ -3,7 +3,11 @@
    Dashed core = proposed. Nothing here is a deployment. */
 (function () {
   const NS = 'http://www.w3.org/2000/svg';
-  const C = { fg: '#E9EBEE', fg2: '#C3C8CF', mute: '#9AA1AB', dim: '#3A3F48', acc: '#6E82FF', accSoft: '#9DAAFF', light: '#DCE2FF', bg: '#14161A' };
+  const THEMES = {
+    dark:  { fg: '#E9EBEE', fg2: '#C3C8CF', mute: '#9AA1AB', dim: '#3A3F48', acc: '#6E82FF', accSoft: '#9DAAFF', light: '#DCE2FF', core: '#DCE2FF', bg: '#14161A', hazeOp: [.30, .09], glowOps: [[64, .07], [36, .12], [18, .22], [9, .4], [4, .75]], ringOp: 1 },
+    light: { fg: '#14171C', fg2: '#2E3540', mute: '#55606E', dim: '#B9C0CA', acc: '#1F3AFF', accSoft: '#1F3AFF', light: '#1F3AFF', core: '#1F3AFF', bg: '#DEE3EA', hazeOp: [.10, .03], glowOps: [[56, .03], [30, .05], [14, .09], [7, .18], [3, .45]], ringOp: .8 }
+  };
+  const C = THEMES[document.documentElement.dataset.theme] || THEMES.dark;
   const ICON = {
     bank: '<path d="M4 15 L20 5 L36 15 Z"/><path d="M6 34 H34 M5 37 H35"/><path d="M10 18 V31 M17 18 V31 M23 18 V31 M30 18 V31"/>',
     registry: '<rect x="8" y="12" width="22" height="24" rx="2"/><path d="M12 8 H32 a2 2 0 0 1 2 2 V32"/><path d="M13 19 H25 M13 24 H25 M13 29 H21"/>',
@@ -30,7 +34,7 @@
   function defs(svg) {
     const d = el('defs', {}, svg);
     d.innerHTML = `
-      <radialGradient id="haze${uid}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${C.acc}" stop-opacity=".30"/><stop offset=".5" stop-color="${C.acc}" stop-opacity=".09"/><stop offset="1" stop-color="${C.acc}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="haze${uid}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${C.acc}" stop-opacity="${C.hazeOp[0]}"/><stop offset=".5" stop-color="${C.acc}" stop-opacity="${C.hazeOp[1]}"/><stop offset="1" stop-color="${C.acc}" stop-opacity="0"/></radialGradient>
       <filter id="soft${uid}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>`;
     return uid;
   }
@@ -43,13 +47,13 @@
     d.innerHTML = `<linearGradient id="g${mid}" gradientUnits="userSpaceOnUse" x1="${x0}" x2="${x1}" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".18" stop-color="#fff" stop-opacity="1"/><stop offset=".82" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${mid}"><rect x="${x0 - 80}" y="${y - 120}" width="${x1 - x0 + 160}" height="240" fill="url(#g${mid})"/></mask>`;
     const m = el('g', { mask: `url(#${mid})` }, g);
     el('ellipse', { cx: (x0 + x1) / 2, cy: y, rx: (x1 - x0) / 2, ry: 70, fill: `url(#haze${id})` }, m);
-    [[64, .07], [36, .12], [18, .22], [9, .4], [4, .75]].forEach(([w, op]) =>
+    C.glowOps.forEach(([w, op]) =>
       el('line', { x1: x0, x2: x1, y1: y, y2: y, stroke: C.accSoft, 'stroke-opacity': op, 'stroke-width': w, 'stroke-linecap': 'round' }, m));
-    el('line', { x1: x0, x2: x1, y1: y, y2: y, stroke: C.light, 'stroke-width': 2, 'stroke-dasharray': '26 10', class: 'core' }, m);
+    el('line', { x1: x0, x2: x1, y1: y, y2: y, stroke: C.core, 'stroke-width': 2, 'stroke-dasharray': '26 10', class: 'core' }, m);
     if (marks) el('path', { d: marks.map(x => `M${x} ${y - 5}V${y + 5}`).join(''), stroke: C.light, 'stroke-opacity': .35, 'stroke-width': 1 }, g);
     (lit || []).forEach((lx, i) => {
       const halo = el('circle', { cx: lx, cy: y, r: 9, fill: C.light, opacity: .5, filter: `url(#soft${id})` }, g);
-      el('circle', { cx: lx, cy: y, r: 3.2, fill: '#fff' }, g);
+      el('circle', { cx: lx, cy: y, r: 3.2, fill: C.bg === '#14161A' ? '#fff' : C.acc }, g);
       el('animate', { attributeName: 'opacity', values: '.35;.7;.35', dur: '4s', begin: `${i * .6}s`, repeatCount: 'indefinite' }, halo);
     });
     if (label) text(g, label.x, y + 30, label.t, { fill: C.accSoft });
@@ -57,8 +61,8 @@
   }
   function ring(svg, id, x, y, r, icon, op = .7) {
     const g = el('g', {}, svg);
-    el('circle', { cx: x, cy: y, r: r + 10, fill: C.acc, 'fill-opacity': .06, filter: `url(#soft${id})` }, g);
-    el('circle', { cx: x, cy: y, r, fill: 'none', stroke: C.fg2, 'stroke-opacity': op, 'stroke-width': 1.2 }, g);
+    el('circle', { cx: x, cy: y, r: r + 10, fill: C.acc, 'fill-opacity': C.ringOp < 1 ? .035 : .06, filter: `url(#soft${id})` }, g);
+    el('circle', { cx: x, cy: y, r, fill: 'none', stroke: C.fg2, 'stroke-opacity': op * C.ringOp, 'stroke-width': 1.2 }, g);
     if (icon) {
       const sc = r / 34 * .75;
       const ig = el('g', { transform: `translate(${x - 20 * sc},${y - 20 * sc}) scale(${sc})`, fill: 'none', stroke: C.fg2, 'stroke-opacity': op, 'stroke-width': 2.2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
@@ -74,7 +78,7 @@
     if (o.spark !== false) {
       const s = el('g', { opacity: 0 }, g);
       el('circle', { r: 5, fill: C.accSoft, opacity: .6, filter: `url(#soft${id})` }, s);
-      el('circle', { r: 2, fill: '#fff' }, s);
+      el('circle', { r: 2, fill: C.bg === '#14161A' ? '#fff' : C.acc }, s);
       const am = el('animateMotion', { dur: o.dur || '3.2s', begin: o.begin || '0s', repeatCount: o.once ? '1' : 'indefinite', fill: 'freeze', path: d, keyPoints: '0;1', keyTimes: '0;1', calcMode: 'spline', keySplines: '.4 0 .6 1' }, s);
       el('animate', { attributeName: 'opacity', values: '0;1;1;0', keyTimes: '0;.1;.85;1', dur: o.dur || '3.2s', begin: o.begin || '0s', repeatCount: o.once ? '1' : 'indefinite' }, s);
     }
@@ -114,12 +118,10 @@
     const yS = 60, yB = Math.round(H * .55), yR = H - 70;
     const icons = ['bank', 'registry', 'card', 'identity', 'agent'];
     sx.forEach((x, i) => { fall(svg, id, x, yS + 26, land[i], yB, { begin: `${i * .7}s`, dur: '3.4s' }); ring(svg, id, x, yS, 24, narrow ? null : icons[i], .6); });
-    text(svg, cx, yS - 40, 'systems · each keeps its own rules');
     const marks = []; for (let x = 60; x < W - 60; x += 35) marks.push(x);
-    beam(svg, id, yB, -40, W + 40, marks, land, { x: cx, t: 'the record · proposed' });
+    beam(svg, id, yB, -40, W + 40, marks, land, null);
     const rx = narrow ? [cx - 90, cx, cx + 90] : [cx - 110, cx, cx + 110];
     rx.forEach((x, i) => { fall(svg, id, land[Math.round((land.length - 1) * i / 2)], yB, x, yR - 22, { spark: false, op: .25, ringUp: true, begin: `${1 + i * 1.3}s` }); ring(svg, id, x, yR, 20, null, .4); });
-    text(svg, cx, H - 12, 'readers · check on their own terms');
   };
 
   FIG.why = (svg, W) => {
@@ -137,15 +139,13 @@
     }
     pts.forEach(([x, y]) => ring(svg, id, x, y, 16, null, .55));
     text(svg, lcx, lcy - R - 36, 'today');
-    text(svg, lcx, lcy + R + 44, 'five systems · ten pairs', { cls: 'lab sm' });
     // right: beam
     const rcx = narrow ? W / 2 : W * .72, top = narrow ? 360 : 60, yB = narrow ? 520 : 250, gap = narrow ? 62 : Math.min(80, W * .08);
     const rx = Array.from({ length: 5 }, (_, i) => rcx + (i - 2) * gap);
     rx.forEach((x, i) => { fall(svg, id, x, top + 16, x, yB, { begin: `${i * .5}s`, dur: '2.8s' }); ring(svg, id, x, top, 16, null, .55); });
     const marks = []; for (let x = rcx - gap * 2.6; x <= rcx + gap * 2.6; x += 26) marks.push(x);
-    beam(svg, id, yB, rcx - gap * 3.2, rcx + gap * 3.2, marks, rx, { x: rcx, t: 'with one shared record · proposed' });
-    text(svg, rcx, top - 36, 'one reference', { fill: C.accSoft });
-    text(svg, rcx, yB + 56, 'five systems · five threads · once', { cls: 'lab sm' });
+    beam(svg, id, yB, rcx - gap * 3.2, rcx + gap * 3.2, marks, rx, null);
+    text(svg, rcx, top - 36, 'with a shared record', { fill: C.accSoft });
     if (!narrow) el('line', { x1: W / 2, x2: W / 2, y1: 30, y2: H - 30, stroke: C.fg2, 'stroke-opacity': .12 }, svg);
   };
 
@@ -155,13 +155,11 @@
     el('rect', { x: vx, y: 40, width: vw, height: 150, rx: 22, fill: C.fg, 'fill-opacity': .025, stroke: C.fg2, 'stroke-opacity': .35, 'stroke-width': 1.2 }, svg);
     const cols = Math.floor((vw - 40) / 42);
     for (let i = 0; i < cols * 2; i++) el('rect', { x: vx + 24 + (i % cols) * 42, y: 72 + Math.floor(i / cols) * 50, width: 28, height: 30, rx: 4, fill: 'none', stroke: C.fg2, 'stroke-opacity': .22 }, svg);
-    text(svg, cx, 26, 'a system · content · rules · state · meaning', { cls: 'lab sm' });
     const yB = 300;
     fall(svg, id, cx, 190, cx, yB, { dur: '3.6s', begin: '0s' });
-    text(svg, cx + 18, 252, 'h(e) · a fingerprint, nothing else', { anchor: 'start', fill: C.fg2, cls: 'lab sm' });
+    text(svg, cx + 18, 252, 'h(e)', { anchor: 'start', fill: C.fg2, cls: 'lab sm' });
     const marks = []; for (let x = 40; x < W - 40; x += 30) marks.push(x);
-    beam(svg, id, yB, -40, W + 40, marks, [cx], { x: cx, t: 'the record · proposed · one order' });
-    text(svg, cx, yB + 60, 'not executed · not validated · not interpreted', { cls: 'lab sm' });
+    beam(svg, id, yB, -40, W + 40, marks, [cx], null);
   };
 
   FIG.who = (svg, W) => {
@@ -176,13 +174,12 @@
     el('path', { d: `M${xs + 44} ${yT - 6} L${xs + 36} ${yT} L${xs + 44} ${yT + 6}`, fill: 'none', stroke: C.fg2, 'stroke-opacity': .45 }, svg);
     numdot(svg, (xs + xr) / 2, yT, 3, 4);
     text(svg, (xs + xr) / 2, yT - 24, narrow ? 'obtains the event · recomputes h(e)' : 'obtains the disclosed event · recomputes h(e)', { fill: C.fg2, cls: narrow ? 'lab sm' : 'lab' });
-    if (!narrow) text(svg, (xs + xr) / 2, yT + 26, 'through whatever access exists today', { cls: 'lab sm' });
     // card
     const cw = narrow ? 200 : 230; card(svg, (xs + xr) / 2 - cw / 2, narrow ? 140 : 128, cw, 60, [['h', 'event e · its rules'], ['s', 'position #n · stored here']]);
     // open band
     const ob0 = narrow ? 230 : 220, ob1 = ob0 + 56, ym = narrow ? 340 : (yT + yB) / 2;
     el('rect', { x: 24, y: ob0, width: W - 48, height: 56, rx: 28, fill: C.fg, 'fill-opacity': .03, stroke: C.fg2, 'stroke-opacity': .25, 'stroke-dasharray': '2 5' }, svg);
-    text(svg, W / 2, ob0 + 32, 'open · conventions may form here');
+    text(svg, W / 2, ob0 + 32, 'open');
     // 1 down, 2 back, 4 check
     fall(svg, id, xs - 14, yT + 30, xs - 14, yB, { dur: '3s', begin: '0s' }); numdot(svg, xs - 46, ym, 1, 0); text(svg, xs - 46, ym + 24, narrow ? 'h(e)' : 'h(e) only', { cls: 'lab sm', fill: C.fg2 });
     fall(svg, id, xs + 18, yB, xs + 18, yT + 30, { spark: false, ringUp: false, op: .35 });
@@ -192,7 +189,7 @@
     numdot(svg, xs + 50, ym + 30, 2, 2); text(svg, xs + 50, ym + 54, 'position', { cls: 'lab sm', fill: C.fg2 });
     fall(svg, id, xr, yT + 30, xr, yB, { spark: false, op: .3 }); numdot(svg, xr + 46, ym, 4, 6); text(svg, xr + 46, ym + 24, narrow ? 'checks' : 'checks at #n', { cls: 'lab sm', fill: C.fg2 });
     const marks = []; for (let x = 40; x < W - 40; x += 30) marks.push(x);
-    beam(svg, id, yB, -40, W + 40, marks, [xs - 14], { x: W / 2, t: 'the record · proposed' });
+    beam(svg, id, yB, -40, W + 40, marks, [xs - 14], null);
     text(svg, xs - 14, yB + 24, '#n', { cls: 'lab sm', fill: C.fg2 });
   };
 
@@ -208,7 +205,7 @@
     fall(svg, id, xg - 12, yT + 28, xg - 12, yB, { dur: '3s', begin: '1.2s' }); text(svg, xg - 24, (yT + yB) / 2, 'h(asset)', { anchor: 'end', cls: 'lab sm', fill: C.fg2 });
     fall(svg, id, xa, yT + 28, xa, yB, { spark: false, op: .3 }); text(svg, xa + 14, (yT + yB) / 2, 'checks order', { anchor: 'start', cls: 'lab sm', fill: C.fg2 });
     const marks = []; for (let x = 40; x < W - 40; x += 30) marks.push(x);
-    beam(svg, id, yB, -40, W + 40, marks, [xb - 12, xg - 12], { x: W / 2, t: 'the record · proposed · sequence, not time' });
+    beam(svg, id, yB, -40, W + 40, marks, [xb - 12, xg - 12], null);
     text(svg, xb - 12, yB + 24 + 26, 'cash · #n', { cls: 'lab sm', fill: C.fg2 }); text(svg, xg - 12, yB + 24 + 26, 'asset · #n+k', { cls: 'lab sm', fill: C.fg2 });
   };
 
@@ -217,13 +214,12 @@
     const id = defs(svg), cx = W / 2, yT = 70, yB = narrow ? 290 : 260, gap = narrow ? 56 : Math.min(90, W * .09);
     const xs = [cx - gap * 2.5, cx - gap * 1.5, cx - gap * .5, cx + gap * .5];
     xs.forEach(x => { fall(svg, id, x, yT + 26, x, yB, { spark: false, op: .3 }); ring(svg, id, x, yT, narrow ? 18 : 26, null, .7); });
-    text(svg, cx - gap, yT + (narrow ? 38 : 48), 'systems · each with its own rules', { cls: 'lab sm' });
     const xo = cx + gap * 2.2; fall(svg, id, xo, yT + 26, xo, yB, { spark: false, op: .3 }); ring(svg, id, xo, yT, narrow ? 18 : 26, 'search', .7); text(svg, xo, yT + (narrow ? 38 : 48), 'outsider', { cls: 'lab sm' });
     numdot(svg, cx - gap * 2, yT - 40, 2); text(svg, cx - gap * 2 + 18, yT - 36, 'identity', { anchor: 'start', fill: C.fg2, cls: 'lab sm' });
     numdot(svg, cx, yT - 40, 6); text(svg, cx + 18, yT - 36, 'behaviour', { anchor: 'start', fill: C.fg2, cls: 'lab sm' });
     numdot(svg, xo - 10, yT - 40, 5); text(svg, xo + 8, yT - 36, 'proof', { anchor: 'start', fill: C.fg2, cls: 'lab sm' });
     const marks = []; for (let x = 40; x < W - 40; x += 30) marks.push(x);
-    beam(svg, id, yB, -40, W + 40, marks, [], { x: cx, t: 'the record · proposed' });
+    beam(svg, id, yB, -40, W + 40, marks, [], null);
     [[cx - gap * 1.8, 1, 'ordering'], [cx, 3, 'availability'], [cx + gap * 1.8, 4, 'longevity']].forEach(([x, n, t]) => { numdot(svg, x, yB, n); text(svg, x, yB + 56, t, { fill: C.fg2, cls: 'lab sm' }); });
   };
 

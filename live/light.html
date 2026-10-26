@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Open Value · beam · live · light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#DEE3EA;--bg2:#E9EDF2;--fg:#14171C;--fg2:#2E3540;--mute:#55606E;--dim:#B9C0CA;--rule:rgba(20,23,28,.14);--acc:#1F3AFF;--accs:#1F3AFF;--sans:"IBM Plex Sans","Helvetica Neue",Helvetica,Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:linear-gradient(180deg,var(--bg) 0,var(--bg2) 100%);color:var(--fg);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased;position:relative}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");mix-blend-mode:overlay}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header.top{display:flex;justify-content:space-between;align-items:baseline;padding:26px 0 18px;border-bottom:1px solid var(--fg)}
+.brand{font-weight:600;font-size:14px}
+nav a{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--mute);margin-left:22px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.mono.acc{color:var(--accs)}
+section{padding:72px 0 24px;border-top:1px solid var(--rule)}
+section.hero{border-top:0;padding:96px 0 40px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+h1{font-size:clamp(40px,5.2vw,62px);line-height:1.04;font-weight:500;letter-spacing:-.03em;margin:14px 0 22px}
+.claim{font-size:19px;line-height:1.45;color:var(--fg2);max-width:520px;margin:0 0 14px}
+.under{color:var(--mute);font-size:15px;max-width:480px;margin:0 0 30px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;padding:13px 18px;border:1px solid rgba(20,23,28,.3);color:var(--fg);border-radius:10px}
+.btn.primary{background:var(--acc);color:#fff;border-color:var(--acc);box-shadow:0 10px 34px -8px rgba(31,58,255,.42)}
+h2{font-size:26px;line-height:1.2;font-weight:500;letter-spacing:-.02em;margin:10px 0 14px}
+p{margin:0 0 14px;max-width:640px;color:var(--fg2)}
+p.quiet{color:var(--mute);font-size:15px}
+.fig{margin:36px 0 12px;width:100%}
+.fig svg{display:block;width:100%;height:auto;overflow:visible}
+.fig text{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.fig text.sm{font-size:10px;letter-spacing:.08em}
+.fig text.body{font-family:var(--sans);font-size:13px;letter-spacing:0;text-transform:none}
+.fig text.num{font-size:11px;letter-spacing:0}
+.fig .core{animation:drift 14s linear infinite}
+@keyframes drift{to{stroke-dashoffset:-72}}
+@media (prefers-reduced-motion:reduce){.fig .core{animation:none}}
+ol.q{list-style:none;padding:0;margin:0 0 20px;max-width:640px}
+ol.q li{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--rule);color:var(--fg2)}
+ol.q li:last-child{border-bottom:1px solid var(--rule)}
+ol.q .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accs);padding-top:4px}
+ol.q .t{font-weight:500;color:var(--fg);display:block;margin-bottom:2px}
+.ph{font-family:var(--mono);font-size:12px;color:var(--accs);letter-spacing:.04em}
+footer{padding:44px 0 56px;border-top:1px solid var(--rule);color:var(--mute);font-size:13px}
+footer .mono{display:block;margin-bottom:6px}
+@media (max-width:900px){section.hero{grid-template-columns:1fr;gap:24px;padding-top:56px}}
+@media (max-width:480px){.wrap{padding:0 16px}section{padding-top:52px}nav a{margin-left:14px}h2{font-size:22px}.claim{font-size:17px}}
+</style>
+</head>
+<body><div class="wrap">
+
+<header class="top"><span class="brand">Open Value</span><nav><a href="#why">Why</a><a href="#record">Record</a><a href="#questions">Questions</a><a href="#call">Call</a></nav></header>
+
+<section class="hero" id="claim">
+  <div>
+    <span class="mono acc">Open research</span>
+    <h1>A neutral, content-blind root&nbsp;of&nbsp;trust.</h1>
+    <p class="claim">Independent systems can share one record of what happened and in what order, without adopting each other's rules.</p>
+    <p class="under">The record sits underneath; everything that carries meaning stays above it, in the systems themselves. Value, here, means records of economically consequential events. In every figure, the dashed line is what is proposed.</p>
+    <div class="ctas"><a class="btn primary" href="#">Read the thesis</a><a class="btn" href="#call">Submit a pre-proposal</a></div>
+  </div>
+  <div class="fig" data-fig="hero" data-label="Independent systems above drop fingerprints onto a proposed record drawn as a beam of light; readers check from below."></div>
+</section>
+
+<section id="why">
+  <span class="mono">01 · Why a shared record is needed</span>
+  <h2>Order across systems is agreed pair by pair.</h2>
+  <p>When one event touches two systems, each records it under its own rules, in its own order. To establish that A happened before B across them, someone fetches both records and reconciles them. That work is done once per pair, and pairs grow faster than systems: five systems have ten, fifty have 1,225.</p>
+  <p class="quiet">A shared record of order would let each system do that work once, against one reference. Validation and meaning do not move; only the work of agreeing on order does.</p>
+  <div class="fig" data-fig="why" data-label="Five systems bound by ten tangled threads, beside the same five each dropping one spark onto a shared beam."></div>
+</section>
+
+<section id="record">
+  <span class="mono">02 · The record underneath</span>
+  <h2>Only a fingerprint goes down.</h2>
+  <p>A fingerprint is a cryptographic commitment to an event, made by the system that owns it, in that system's own format. The event stays in the system. What a fingerprint reveals is the system's choice, and part of how records are later disclosed selectively.</p>
+  <p>Open Value proposes an ordering service: a record that puts fingerprints in one order and is meant to keep them available. It is neutral in two senses: content-blind, so it carries no meaning of its own; and belonging to no system's rules, so using it is not adopting anyone else's. Events are not executed, validated or interpreted there. State is always derived from events, above the record.</p>
+  <p class="quiet">Order is not time. A record is not proof. Ordered records of commitments already exist for single domains under named operators; what is proposed differs in scope: one order across unrelated systems, with no privileged operator. Whether that is achievable is the research question.</p>
+  <div class="fig" data-fig="record" data-label="A system holding its content; one spark falls to the beam and becomes a lit point in one order."></div>
+</section>
+
+<section id="who">
+  <span class="mono">03 · Who does what</span>
+  <h2>Fingerprints go down. A position comes back. Readers check later.</h2>
+  <p>As proposed: a <b>system</b> submits a fingerprint of an event it has already recorded under its own rules, receives a position in the order, and stores that position next to its own record. That is the integration footprint. A <b>reader</b> — an auditor, a regulator, a counterparty, or the same system later — obtains the disclosed event through whatever access exists today, recomputes the fingerprint and checks it against the record. The record adds no new channel; disclosure and retention stay with the system under its existing law.</p>
+  <p class="quiet">Content never crosses down. No rule flows up. A reversal is a new event in the order, not an edit. Whether shared conventions form between systems and the record, one layer or several, is open.</p>
+  <div class="fig" data-fig="who" data-label="A system sends a fingerprint down and receives a position back; a reader obtains the event from the system and checks it against the beam."></div>
+</section>
+
+<section id="example">
+  <span class="mono">04 · One example · illustrative</span>
+  <h2>A cash leg and an asset leg in different systems.</h2>
+  <p>A bank holds the cash leg of a trade; a registry holds the asset leg. Each submits a fingerprint of its leg as it settles and keeps the position it receives. Months later an auditor with both disclosed records shows that the cash fingerprint sits before the asset fingerprint in one order, without either system adopting the other's rules.</p>
+  <p class="quiet">Sequence, not clock time. Inclusion, not validity. The same shape applies to a vehicle's history across insurers and registries, to an ACH reversal recorded after the original, and to value moving between an airline and a telco. All illustrative; none is a deployment.</p>
+  <div class="fig" data-fig="example" data-label="A bank and a registry each drop one spark onto the beam; an auditor later checks that cash sits before asset."></div>
+</section>
+
+<section id="questions">
+  <span class="mono">05 · What is not known</span>
+  <h2>The ordering service is proposed, not built. Six questions are open.</h2>
+  <ol class="q">
+    <li><span class="n">01</span><div><span class="t">Ordering</span>Who decides the order, and how do they agree without a coin to stake? Tokenless and permissionless operation are objectives of this question, not results.</div></li>
+    <li><span class="n">02</span><div><span class="t">Identity</span>What stops one actor from pretending to be a million?</div></li>
+    <li><span class="n">03</span><div><span class="t">Availability</span>How does ordered data stay available when no one stores all of it?</div></li>
+    <li><span class="n">04</span><div><span class="t">Longevity</span>How does data survive long term when no one is paid to keep it?</div></li>
+    <li><span class="n">05</span><div><span class="t">Proof across applications</span>How does an outsider prove A happened before B across unrelated applications?</div></li>
+    <li><span class="n">06</span><div><span class="t">Behaviour</span>What makes participants behave with no coin to lose?</div></li>
+  </ol>
+  <p class="quiet">A shared record is necessary for independent systems to agree on order; it is not sufficient.</p>
+  <div class="fig" data-fig="questions" data-label="The same figure with six numbered markers at the parts that are open."></div>
+</section>
+
+<section id="call">
+  <span class="mono">06 · Open call for proposals</span>
+  <h2>Work on one of the six questions.</h2>
+  <p>Open Value is a Swiss Verein, a public-benefit association, run as an open research initiative. It invites pre-proposals on any of the six questions, from individuals and groups, in any discipline that bears on them: cryptography, distributed systems, economics, law, enterprise infrastructure.</p>
+  <p class="quiet">Pre-proposals are short: the question, the approach, what a result would look like, and who is doing the work.</p>
+  <p><span class="ph">[Deadline: to be set by the team]</span><br><span class="ph">[Fellowship terms: to be set by the team]</span></p>
+  <div class="ctas"><a class="btn primary" href="#">Read the thesis</a><a class="btn" href="#">Submit a pre-proposal</a></div>
+</section>
+
+<footer><span class="mono">Open Value</span><span class="mono">Swiss Verein · public-benefit association</span><span class="mono">Draft · for review · nothing here is deployed</span></footer>
+
+</div>
+<script src="beam.js"></script>
+</body>
+</html>

@@ -179,8 +179,9 @@
       while (ticks.length > 40) { const o = ticks.shift(); o.el.remove(); }
     }
     function read() {
-      if (ticks.length < 3) return;
-      const tk = ticks[Math.floor(Math.random() * (ticks.length - 1))];
+      const vis = ticks.filter(t => t.x > cx - step * 4.5 && t.x < cx + step * 5 && !t.flash);
+      if (vis.length < 2) return;
+      const tk = vis[Math.floor(Math.random() * vis.length)];
       const r = Math.floor(Math.random() * rx.length);
       const g = el('circle', { r: 3.5, fill: C.bg, stroke: C.fg2, 'stroke-width': 1.2 }, traffic);
       rings.push({ g, from: [tk.x, yB], to: [rx[r], yR - 20], t0: performance.now(), dur: 3000, tick: tk });
@@ -239,6 +240,14 @@
     const rcx = narrow ? W / 2 : W * .72, top = narrow ? 360 : 60, yB = narrow ? 520 : 250, gap = narrow ? 62 : Math.min(80, W * .08);
     const rx = Array.from({ length: 5 }, (_, i) => rcx + (i - 2) * gap);
     rx.forEach((x, i) => { fall(svg, id, x, top + 16, x, yB, { begin: `${i * .5}s`, dur: '2.8s' }); sysGlyph(svg, id, x, top, i, { w: 40, h: 30, op: .7 }); });
+    // reads: one at a time, a system checks another system's position against the same reference
+    if (!reduced) [[1, 3], [4, 0], [2, 4], [0, 2], [3, 1]].forEach(([from, to], k) => {
+      const d = fallPath(rx[from], yB, rx[to], top + 16);
+      const r = el('circle', { r: 3.5, fill: C.bg, stroke: C.fg2, 'stroke-width': 1.2, opacity: 0 }, svg);
+      const P = 22, w0 = (k * 4.4) / P, w1 = (k * 4.4 + 3) / P;
+      el('animateMotion', { dur: `${P}s`, begin: '4s', repeatCount: 'indefinite', path: d, calcMode: 'spline', keyPoints: '0;0;1;1', keyTimes: `0;${w0.toFixed(4)};${w1.toFixed(4)};1`, keySplines: '0 0 1 1;.4 0 .6 1;0 0 1 1' }, r);
+      el('animate', { attributeName: 'opacity', values: '0;0;1;1;0;0', keyTimes: `0;${w0.toFixed(4)};${(w0 + .3 / P).toFixed(4)};${(w1 - .4 / P).toFixed(4)};${w1.toFixed(4)};1`, dur: `${P}s`, begin: '4s', repeatCount: 'indefinite' }, r);
+    });
     const marks = []; for (let x = rcx - gap * 2.6; x <= rcx + gap * 2.6; x += 26) marks.push(x);
     beam(svg, id, yB, rcx - gap * 3.2, rcx + gap * 3.2, marks, rx, null);
     text(svg, rcx, top - 40, 'with a shared record', { fill: C.accSoft });

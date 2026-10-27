@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Open Value · meaning in, fingerprint out · exploration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#DEE3EA;--paper:#E9EDF2;--fg:#14171C;--fg2:#2E3540;--mute:#55606E;--dim:#B9C0CA;--rule:rgba(20,23,28,.14);--acc:#1F3AFF;--sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+html[data-theme=dark]{--bg:#14161A;--paper:#181B20;--fg:#E9EBEE;--fg2:#C3C8CF;--mute:#9AA1AB;--dim:#3A3F48;--rule:#262A31;--acc:#6E82FF}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 80px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:20px;border-bottom:1px solid var(--rule);padding-bottom:16px}
+h1{font-size:22px;font-weight:500;letter-spacing:-.02em;margin:6px 0 4px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+button.t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;background:none;border:1px solid var(--rule);color:var(--fg);padding:8px 12px;border-radius:999px;cursor:pointer}
+button.t:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.hero{display:grid;grid-template-columns:5fr 7fr;gap:40px;align-items:center;padding:64px 0 40px}
+.hero h2{font-size:clamp(34px,4.4vw,52px);line-height:1.05;font-weight:500;letter-spacing:-.03em;margin:0 0 18px}
+.hero p{color:var(--fg2);font-size:18px;max-width:440px;margin:0 0 10px}
+.hero p.q{color:var(--mute);font-size:15px}
+.fig{width:100%}
+.fig svg{display:block;width:100%;height:auto;overflow:visible}
+.fig text{font-family:var(--mono);font-size:13px;fill:var(--fg2);white-space:pre}
+.fig text.lab{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;fill:var(--mute)}
+.fig text.lab.fn{text-transform:none;letter-spacing:0;font-size:12px}
+.fig text.hash{fill:var(--acc);font-weight:500}
+.notes{border-top:1px solid var(--rule);padding-top:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.notes h3{font-size:14px;font-weight:500;margin:0 0 6px}
+.notes p{color:var(--mute);font-size:14px;margin:0}
+.core{animation:drift 14s linear infinite}@keyframes drift{to{stroke-dashoffset:-72}}
+@media (prefers-reduced-motion:reduce){.core{animation:none}}
+@media (max-width:900px){.hero{grid-template-columns:1fr;gap:24px;padding-top:40px}}
+</style>
+</head>
+<body><div class="wrap">
+<header><div><span class="mono">Exploration · hero · Cobalt, reversed</span><h1>Meaning in, fingerprint out</h1></div><button class="t" id="tog">Dark</button></header>
+
+<section class="hero">
+  <div>
+    <h2>A neutral, content-blind root&nbsp;of&nbsp;trust.</h2>
+    <p>Independent systems can share one record of what happened and in what order, without adopting each other's rules.</p>
+    <p class="q">An event stays readable in its own system. What crosses into the record is a fingerprint of it, in a position. In every figure, the dashed line is what is proposed.</p>
+  </div>
+  <div class="fig" id="fig" role="img" aria-label="A readable event in a system's own format moves toward a boundary, dissolves as it crosses, and lands on the record as a short fingerprint in a position; a reader with the disclosed event recomputes the same fingerprint and matches it."></div>
+</section>
+
+<section class="notes">
+  <div><h3>What it says</h3><p>Content-blindness, drawn: the record never receives the event, only h(e). Order is the position where it lands. The read is the same method run again by someone holding the disclosed event; a match is inclusion, not validity.</p></div>
+  <div><h3>What it must not say</h3><p>The method inside h(·) is the system's. The source says commitment; it does not say zero-knowledge, Merkle or anything else. The boundary is drawn; the method is not named. Values are illustrative.</p></div>
+  <div><h3>Against Cobalt</h3><p>Cobalt resolves noise into types; this dissolves types into noise on purpose. Same density field, same vertical boundary, opposite direction. The record's beam replaces Relay's event list.</p></div>
+</section>
+</div>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const T={light:{fg:'#14171C',fg2:'#2E3540',mute:'#55606E',acc:'#1F3AFF',core:'#1F3AFF',bg:'#DEE3EA',center:'#1F3AFF',glow:[[48,.04],[26,.06],[12,.1],[6,.2],[3,.45]]},
+         dark:{fg:'#E9EBEE',fg2:'#C3C8CF',mute:'#9AA1AB',acc:'#6E82FF',core:'#DCE2FF',bg:'#14161A',center:'#fff',glow:[[64,.07],[36,.12],[18,.22],[9,.4],[4,.75]]}};
+let C=T.light, raf=0;
+const EVENTS=[
+ ['{ "type": "payment.settled",','  "amount": 4800, "ccy": "CHF",','  "from": "acct_7f3a", "to": "acct_02be",','  "at": "2026-10-08T09:42:16Z" }'],
+ ['{ "type": "title.transferred",','  "asset": "vehicle:ZH-482113",','  "from": "owner_19c4", "to": "owner_a8e0",','  "at": "2026-10-08T09:42:31Z" }'],
+ ['{ "type": "reversal",','  "of": "payment.settled#7f3a02be",','  "reason": "R10", "amount": 4800,','  "at": "2026-10-08T09:43:05Z" }'],
+];
+const HASHES=['9c1e 4a07 e2b9','77d3 b50f 03ac','e8f1 2c44 91ab'];
+const DENSE='@%#*+=-:. ';
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function build(){
+  cancelAnimationFrame(raf);
+  C=T[document.documentElement.dataset.theme];
+  const host=document.getElementById('fig'); host.innerHTML='';
+  const W=Math.max(360,Math.round(host.getBoundingClientRect().width)), narrow=W<520, H=narrow?420:360;
+  const svg=el('svg',{xmlns:NS,viewBox:`0 0 ${W} ${H}`,width:'100%'},host);
+  const id='d'+Math.random().toString(36).slice(2,6);
+  el('defs',{},svg).innerHTML=`<filter id="s${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+    <linearGradient id="g${id}" gradientUnits="userSpaceOnUse" x1="0" x2="${W}"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".08" stop-color="#fff" stop-opacity="1"/><stop offset=".92" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="m${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}"><rect x="0" y="0" width="${W}" height="${H}" fill="url(#g${id})"/></mask>`;
+  const bx=Math.round(W*(narrow?.5:.56));            // the boundary
+  const yB=Math.round(H*.62);                          // the record
+  const chW=7.8, rows=4, rowH=19, textY=narrow?70:yB-56;
+  const cols=Math.floor((bx-52)/chW);
+  // system frame (left), holding the clear event
+  el('rect',{x:12,y:textY-30,width:bx-24,height:rows*rowH+40,rx:12,fill:C.fg,'fill-opacity':.025,stroke:C.fg2,'stroke-opacity':.35,'stroke-width':1.2},svg);
+  const sysLab=el('text',{x:24,y:textY-12,class:'lab'},svg); sysLab.textContent='a system · its own format';
+  const rowsEl=[];for(let r=0;r<rows;r++){const t=el('text',{x:24,y:textY+8+r*rowH,'xml:space':'preserve'},svg);rowsEl.push(t)}
+  // boundary
+  el('line',{x1:bx,x2:bx,y1:20,y2:H-20,stroke:C.acc,'stroke-opacity':.8,'stroke-width':1.2,'stroke-dasharray':'4 5'},svg);
+  const bl=el('text',{x:bx,y:14,class:'lab fn','text-anchor':'middle'},svg); bl.textContent='h(·)';
+  // the record: a beam from the boundary to the right edge
+  const bg=el('g',{mask:`url(#m${id})`},svg);
+  C.glow.forEach(([w,op])=>el('line',{x1:bx,x2:W+40,y1:yB,y2:yB,stroke:C.acc,'stroke-opacity':op,'stroke-width':w,'stroke-linecap':'round'},bg));
+  el('line',{x1:bx,x2:W+40,y1:yB,y2:yB,stroke:C.core,'stroke-width':2,'stroke-dasharray':'26 10',class:'core'},bg);
+  const order=el('g',{},svg), traffic=el('g',{},svg);
+  // reader frame (right, below the beam)
+  const rxx=bx+Math.round((W-bx)*.62), ry=H-34;
+  el('rect',{x:rxx-26,y:ry-18,width:52,height:36,rx:10,fill:'none',stroke:C.fg2,'stroke-opacity':.5,'stroke-width':1.2},svg);
+  el('circle',{cx:rxx,cy:ry,r:4.5,fill:'none',stroke:C.fg2,'stroke-opacity':.7,'stroke-width':1.3},svg);
+  // --- animation ---
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ev=0, phase='show', t0=performance.now(), headX=bx+36, ticks=[]; const step=26;
+  let hashEl=null, ringEl=null;
+  function setRows(front){ // front in columns; chars beyond it dissolve, far beyond vanish
+    const lines=EVENTS[ev];
+    for(let r=0;r<rows;r++){let s='';const line=(lines[r]||'').padEnd(cols).slice(0,cols);
+      for(let c=0;c<cols;c++){const d=c-front; let ch=line[c];
+        if(d>14) ch=' '; else if(d>-2){const k=Math.min(DENSE.length-2,Math.max(0,Math.round((d+2)/16*(DENSE.length-2))));ch= line[c]===' '?' ':DENSE[k+Math.floor(Math.random()*2)]||' ';}
+        s+=ch;} rowsEl[r].textContent=s;}
+  }
+  function write(){
+    const to=headX; headX+=step;
+    hashEl=el('text',{x:bx+10,y:yB-16,class:'hash'},traffic); hashEl.textContent=HASHES[ev];
+    return {to,t0:performance.now()};
+  }
+  let w=null, read=null;
+  if(reduced){ setRows(cols+40); for(let k=0;k<6;k++) el('line',{x1:bx+36+k*step,x2:bx+36+k*step,y1:yB-9,y2:yB+9,stroke:C.core,'stroke-opacity':.7,'stroke-width':2},order); return; }
+  function frame(now){
+    if(!svg.isConnected) return;
+    const t=now-t0;
+    if(phase==='show'){ setRows(cols+40); if(t>1600){phase='dissolve';t0=now} }
+    else if(phase==='dissolve'){ const front=cols-((t/2200)*(cols+16)); setRows(front); if(t>2200){phase='cross';t0=now;w=write()} }
+    else if(phase==='cross'){ setRows(-99-0); // text gone; hash slides from boundary to its position
+      const u=Math.min(1,t/900), e=1-Math.pow(1-u,3); const x=bx+10+(w.to-bx-10)*e;
+      hashEl.setAttribute('x',x); hashEl.setAttribute('y',yB-16-8*Math.sin(Math.PI*u)); hashEl.setAttribute('opacity',u<.9?1:(1-u)/.1);
+      if(u>=1){hashEl.remove(); const tk=el('line',{x1:w.to,x2:w.to,y1:yB-10,y2:yB+10,stroke:C.core,'stroke-width':2,'stroke-opacity':1},order);
+        const fl=el('circle',{cx:w.to,cy:yB,r:10,fill:C.acc,opacity:.6,filter:`url(#s${id})`},order); setTimeout(()=>fl.remove(),700);
+        ticks.push({x:w.to,el:tk,ev}); phase='read'; t0=now;
+        // the reader: holds the disclosed event, runs the same method, matches
+        ringEl=el('circle',{cx:w.to,cy:yB,r:3.5,fill:C.bg,stroke:C.fg2,'stroke-width':1.2},traffic);} }
+    else if(phase==='read'){ const u=Math.min(1,t/1400), e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+      ringEl.setAttribute('cx',w.to+(rxx-w.to)*e); ringEl.setAttribute('cy',yB+(ry-20-yB)*e);
+      if(u>=1){ringEl.remove(); const tk=ticks[ticks.length-1].el; tk.setAttribute('stroke-width',3.4); setTimeout(()=>tk.setAttribute('stroke-width',2),500);
+        const chk=el('text',{x:rxx+30,y:ry+4,class:'lab'},traffic); chk.textContent='= #'+(ticks.length); setTimeout(()=>chk.remove(),1800);
+        phase='pause'; t0=now;} }
+    else if(phase==='pause'){ if(t>900){ ev=(ev+1)%EVENTS.length; phase='show'; t0=now;
+        if(headX>W-40){ headX=bx+36; ticks.forEach(k=>k.el.setAttribute('stroke-opacity',.35)); } } }
+    raf=requestAnimationFrame(frame);
+  }
+  raf=requestAnimationFrame(frame);
+}
+build();
+let w0=innerWidth; addEventListener('resize',()=>{if(Math.abs(innerWidth-w0)>40){w0=innerWidth;build()}});
+document.getElementById('tog').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';document.getElementById('tog').textContent=h.dataset.theme==='dark'?'Light':'Dark';build()};
+})();
+</script>
+</body></html>

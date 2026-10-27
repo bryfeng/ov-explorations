@@ -209,6 +209,104 @@
     requestAnimationFrame(frame);
   };
 
+  /* --- hero2: data above each system, dissolving as it falls, posted onto the base layer. No frames. --- */
+  const EVENTS = [
+    ['payment.settled', '4800 CHF · acct_7f3a → acct_02be', '2026-10-08T09:42:16Z'],
+    ['title.transferred', 'vehicle ZH-482113 · owner_19c4 → owner_a8e0', '2026-10-08T09:42:31Z'],
+    ['invoice.paid', '1 250.00 EUR · inv_88c1', '2026-10-08T09:42:40Z'],
+    ['identity.attested', 'subject_4d2e · claim age≥18', '2026-10-08T09:42:52Z'],
+    ['task.completed', 'agent_b7 · job_3310 · 0.41 USDC', '2026-10-08T09:43:05Z'],
+    ['reversal', 'of payment.settled#7f3a02be · R10', '2026-10-08T09:43:19Z'],
+  ];
+  const HASHES = ['9c1e4a07', '77d3b50f', 'e8f12c44', '03ac91ab', 'b50fe2b9', '4a0777d3', 'c7d10e5f'];
+  const DENSE = '@%#*+=-:. ';
+  FIG.hero2 = (svg, W) => {
+    const narrow = W < 520, H = narrow ? 520 : 500; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const id = defs(svg);
+    const n = narrow ? 3 : 5, gap = Math.min(230, (W - 160) / (n - 1)), cx = W / 2;
+    const sx = Array.from({ length: n }, (_, i) => cx + (i - (n - 1) / 2) * gap);
+    const yS = narrow ? 110 : 96, yB = Math.round(H * .7), yR = H - 36;
+    const beamG = beam(svg, id, yB, -40, W + 40, null, [], null);
+    const order = el('g', {}, svg), streams = el('g', {}, svg), traffic = el('g', {}, svg), data = el('g', {}, svg);
+    const systems = sx.map((x, i) => sysGlyph(svg, id, x, yS, i, { w: narrow ? 44 : 50, h: narrow ? 34 : 38 }));
+    const rx = narrow ? [cx - 70, cx + 70] : [cx - 150, cx, cx + 150];
+    rx.forEach(x => readerGlyph(svg, id, x, yR, { w: 44, h: 32 }));
+    sx.forEach(x => el('path', { d: `M${x} ${yS + 20} V${yB}`, fill: 'none', stroke: C.fg2, 'stroke-opacity': .12, 'stroke-width': 1 }, svg));
+    rx.forEach(x => el('path', { d: fallPath(x, yB, x, yR - 17), fill: 'none', stroke: C.fg2, 'stroke-opacity': .1, 'stroke-width': 1 }, svg));
+    const rowH = 17, chW = 7.6;   // mono 12.5px
+    // the data above each system: three lines, left-aligned at the node, appearing then eroding
+    function mkData(i) {
+      const g = el('g', {}, data); const x = sx[i] - 25, ev = EVENTS[(i + Math.floor(Math.random() * 2)) % EVENTS.length];
+      const lines = ev.map((t, r) => { const e = el('text', { x, y: yS - 62 + r * rowH, class: 'lab data', 'xml:space': 'preserve', fill: r === 0 ? C.fg : C.fg2 }, g); e.textContent = t; return e; });
+      return { g, lines, ev, hash: HASHES[Math.floor(Math.random() * HASHES.length)] };
+    }
+    function erode(d, u) { // u 0..1: characters dissolve from the right end leftwards, top line last
+      d.lines.forEach((e, r) => { const t = d.ev[r]; const L = t.length; const front = L - (u * 1.6 - r * .18) * L; let s = '';
+        for (let c = 0; c < L; c++) { const k = c - front; if (t[c] === ' ') { s += ' '; continue; }
+          if (k > 5) s += ' '; else if (k > -3) s += DENSE[Math.min(8, Math.max(0, Math.round((k + 3) / 8 * 8)))]; else s += t[c]; }
+        e.textContent = s; });
+    }
+    if (reduced) { // static: data over the first system, a run of ticks on the beam
+      const d = mkData(0);
+      for (let k = 0; k < 9; k++) el('line', { x1: cx - 100 + k * 25, x2: cx - 100 + k * 25, y1: yB - 9, y2: yB + 9, stroke: C.light, 'stroke-opacity': .6, 'stroke-width': 2 }, order);
+      return;
+    }
+    // a stream: a column of density glyphs falling from the node to the beam
+    function mkStream(i) {
+      const g = el('g', {}, streams); const x = sx[i]; const rows = Math.floor((yB - yS - 30) / rowH);
+      const cells = Array.from({ length: rows }, (_, r) => { const e = el('text', { x, y: yS + 36 + r * rowH, class: 'lab data', 'text-anchor': 'middle', 'xml:space': 'preserve', fill: C.accSoft }, g); return e; });
+      return { g, cells, rows };
+    }
+    function stepStream(st, u) { // front descends; glyphs densest at the front, thinning behind, blank far behind
+      const front = u * (st.rows + 6);
+      st.cells.forEach((e, r) => { const k = front - r; if (k < 0 || k > 12) { e.textContent = ''; return; }
+        const w = Math.max(1, Math.round(17 - k * 1.3 + Math.sin(r * 1.7) * 2.5)); let str = '';
+        for (let c = 0; c < w; c++) { const d = Math.min(8, Math.max(0, Math.floor(k * .7 + Math.abs(c - w / 2) * .6 + (Math.random() - .5) * 2))); str += DENSE[d]; }
+        e.textContent = str; e.setAttribute('opacity', k < 1.5 ? .95 : Math.max(.12, .95 - k / 13)); });
+    }
+    const ticks = [], step = 25; let headX = cx - step * 4;
+    const jobs = []; let nextJob = 300, nextRead = 4000; const rings = [];
+    const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    function startJob() {
+      if (jobs.length >= 2) return; const i = Math.floor(Math.random() * n); if (jobs.some(j => Math.abs(j.i - i) < 2)) return;
+      jobs.push({ i, t0: performance.now(), d: mkData(i), st: null, hashEl: null, to: null });
+    }
+    function read() {
+      const vis = ticks.filter(t => t.x > cx - step * 4.5 && t.x < cx + step * 5); if (vis.length < 2) return;
+      const tk = vis[Math.floor(Math.random() * vis.length)]; const r = Math.floor(Math.random() * rx.length);
+      const g = el('circle', { r: 3.5, fill: C.bg, stroke: C.fg2, 'stroke-width': 1.2 }, traffic);
+      rings.push({ g, from: [tk.x, yB], to: [rx[r], yR - 17], t0: performance.now(), dur: 2600 });
+      tk.el.setAttribute('stroke-width', 3.2); setTimeout(() => tk.el.setAttribute('stroke-width', 2), 600);
+    }
+    const bez = (p0, p1, t) => { const my = (p0[1] + p1[1]) / 2, u = 1 - t; return [u*u*u*p0[0] + 3*u*u*t*p0[0] + 3*u*t*t*p1[0] + t*t*t*p1[0], u*u*u*p0[1] + 3*u*u*t*my + 3*u*t*t*my + t*t*t*p1[1]]; };
+    function frame(now) {
+      if (!svg.isConnected) return;
+      if (now > nextJob) { startJob(); nextJob = now + 1200 + Math.random() * 1200; }
+      if (now > nextRead) { read(); nextRead = now + 2600 + Math.random() * 2400; }
+      for (let k = jobs.length - 1; k >= 0; k--) { const j = jobs[k]; const t = now - j.t0;
+        // 0–1400 show · 1400–3000 erode and stream · 3000–3700 hash slides to the head · then tick
+        if (t < 1400) { /* data shown */ }
+        else if (t < 3200) { const u = (t - 1400) / 1800; erode(j.d, u); if (!j.st) j.st = mkStream(j.i); stepStream(j.st, u);
+          systems[j.i].head.setAttribute('r', 2.2 + 2 * Math.sin(Math.PI * u)); }
+        else if (t < 3900) { if (!j.hashEl) { j.d.g.remove(); j.st.g.remove(); j.to = headX; headX += step;
+            j.hashEl = el('text', { x: sx[j.i], y: yB - 14, class: 'lab data hash', 'text-anchor': 'middle', fill: C.accSoft }, traffic); j.hashEl.textContent = j.d.hash; }
+          const u = ease((t - 3200) / 700); j.hashEl.setAttribute('x', sx[j.i] + (j.to - sx[j.i]) * u); j.hashEl.setAttribute('y', yB - 14 - 10 * Math.sin(Math.PI * u)); j.hashEl.setAttribute('opacity', u < .85 ? 1 : (1 - u) / .15); }
+        else { j.hashEl.remove(); const tk = el('line', { x1: j.to, x2: j.to, y1: yB - 10, y2: yB + 10, stroke: C.light, 'stroke-width': 2 }, order);
+          const fl = el('circle', { cx: j.to, cy: yB, r: 10, fill: C.light, opacity: .7, filter: `url(#soft${id})` }, order);
+          ticks.push({ x: j.to, el: tk, flash: fl, born: now }); jobs.splice(k, 1); }
+      }
+      for (let k = rings.length - 1; k >= 0; k--) { const rg = rings[k]; const t = (now - rg.t0) / rg.dur; if (t >= 1) { rg.g.remove(); rings.splice(k, 1); continue; }
+        const [x, y] = bez(rg.from, rg.to, ease(t)); rg.g.setAttribute('cx', x); rg.g.setAttribute('cy', y); rg.g.setAttribute('opacity', t > .85 ? (1 - t) / .15 : 1); }
+      ticks.forEach(tk => { const a = (now - tk.born) / 900; if (tk.flash) { if (a >= 1) { tk.flash.remove(); tk.flash = null; } else tk.flash.setAttribute('opacity', .7 * (1 - a)); }
+        tk.el.setAttribute('stroke-opacity', Math.max(.6, 1 - a * .4)); });
+      if (headX > cx + step * 5) { const dx = .3; headX -= dx; ticks.forEach(tk => { tk.x -= dx; tk.el.setAttribute('x1', tk.x); tk.el.setAttribute('x2', tk.x); if (tk.flash) tk.flash.setAttribute('cx', tk.x); }); jobs.forEach(j => { if (j.to != null) j.to -= dx; }); rings.forEach(rg => rg.from[0] -= dx); }
+      ticks.forEach(tk => { if (tk.x < cx - step * 9) tk.el.setAttribute('stroke-opacity', Math.max(0, (tk.x - (cx - step * 11)) / (step * 2) * .6)); });
+      while (ticks.length > 40) { const o = ticks.shift(); o.el.remove(); }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  };
+
   FIG.why = (svg, W) => {
     const narrow = W < 640, H = narrow ? 620 : 380; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const id = defs(svg);

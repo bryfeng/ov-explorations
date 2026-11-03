@@ -431,7 +431,7 @@
   };
 
   function mount(node) {
-    const kind = node.dataset.fig; if (!FIG[kind]) return;
+    const kind = node.dataset.fig; if (!FIG[kind] || node.dataset.mounted) return; node.dataset.mounted = '1';
     const render = () => {
       const W = Math.max(320, Math.round(node.getBoundingClientRect().width)) || 800;
       node.innerHTML = ''; const svg = el('svg', { xmlns: NS, width: '100%', role: 'img', 'aria-label': node.dataset.label || '' }, node);
@@ -442,5 +442,7 @@
     let w = node.getBoundingClientRect().width;
     new ResizeObserver(() => { const nw = node.getBoundingClientRect().width; if (Math.abs(nw - w) > 24) { w = nw; render(); } }).observe(node);
   }
-  document.querySelectorAll('[data-fig]').forEach(mount);
+  const mountAll = () => document.querySelectorAll('[data-fig]').forEach(mount);
+  mountAll();
+  window.__beam = { el, text, defs, beam, sysGlyph, readerGlyph, fallPath, fall, numdot, C, reduced, FIG, mountAll };
 })();
